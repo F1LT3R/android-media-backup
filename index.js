@@ -158,13 +158,12 @@ const copyFileStream = file => new Promise((resolve, reject) => {
 		})
 
 		readableStream.on('end', () => {
-			console.log(`Finished: ${toFile}`)
-			resolve(true)
+			resolve(toFile)
 		})
 
 		readableStream.on('close', () => {
-			console.log(`Closed: ${toFile}`)
-			resolve(true)
+			writableStream.close()
+			resolve(toFile)
 		})
 
 		readableStream.on('error', err => {
@@ -175,19 +174,39 @@ const copyFileStream = file => new Promise((resolve, reject) => {
 })
 
 const backupFiles = backupList => new Promise((resolve, reject) => {
-	const copyStreams = []
+	const total = backupList.length
+	let done = 0
 
-	backupList.forEach(file => {
-		copyStreams.push(copyFileStream(file))
-	})
+	const getNextFile = () => {
+		const file = backupList.pop()
+		return file
+	}
 
-	Promise.all(copyStreams).then(results => {
-		results.forEach(result => {
-			console.log(result)
+	const doStream = () => {
+		if (backupList.length === 0) {
+			resolve('All done')
+		}
+
+		const nextFile = getNextFile()
+
+		copyFileStream(nextFile)
+		.then(toFileName => {
+			done += 1
+			console.log(`Finished: ${done} of ${total}`)
+
+			if (done === total) {
+				console.log('ALL DONE!')
+				resolve()
+			} else {
+				doStream()
+			}
 		})
-	}).catch(err => {
-		reject(err)
-	})
+		.catch(() => {
+			doStream()
+		})
+	}
+
+	doStream()
 })
 
 const main = () => new Promise((resolve, reject) => {
