@@ -114,15 +114,79 @@ const makeBackupDir = () => new Promise((resolve, reject) => {
 	})
 })
 
-const backupFiles = backupList => new Promise((resolve, reject) => {
-
-})
+const isFileBackedUp = file => {
+	console.log(file)
+}
 
 const createBackupList = collections => new Promise((resolve, reject) => {
 	const [media, backup] = collections
 
-	media.forEach((file, idx) => {
-		console.log(idx, file.filepath)
+	const backupList = []
+
+	media.forEach(file => {
+		const from = file.filepath
+		const parsed = path.parse(from)
+		const filename = parsed.name + parsed.ext
+		const relativeDir = path.dirname(path.relative(paths.media, from))
+		const toDir = path.join(paths.backup, relativeDir)
+		const toFile = path.join(toDir, filename)
+		const size = file.size
+
+		backupList.push({
+			from,
+			toFile,
+			toDir
+		})
+	})
+
+	resolve(backupList)
+})
+
+const copyFileStream = file => new Promise((resolve, reject) => {
+	const {from, toFile, toDir, size} = file
+
+	mkdirp(toDir, err => {
+		if (err) {
+			reject(err)
+		}
+
+		const readableStream = fs.createReadStream(from)
+		const writableStream = fs.createWriteStream(toFile)
+
+		readableStream.on('data', chunk => {
+			writableStream.write(chunk)
+		})
+
+		readableStream.on('end', () => {
+			console.log(`Finished: ${toFile}`)
+			resolve(true)
+		})
+
+		readableStream.on('close', () => {
+			console.log(`Closed: ${toFile}`)
+			resolve(true)
+		})
+
+		readableStream.on('error', err => {
+			console.error(err)
+			reject(err)
+		})
+	})
+})
+
+const backupFiles = backupList => new Promise((resolve, reject) => {
+	const copyStreams = []
+
+	backupList.forEach(file => {
+		copyStreams.push(copyFileStream(file))
+	})
+
+	Promise.all(copyStreams).then(results => {
+		results.forEach(result => {
+			console.log(result)
+		})
+	}).catch(err => {
+		reject(err)
 	})
 })
 
@@ -141,6 +205,7 @@ const main = () => new Promise((resolve, reject) => {
 		})
 	})
 	.catch(err => {
+		console.error(err)
 		reject(err)
 	})
 })
