@@ -190,9 +190,9 @@ const backupFiles = backupList => new Promise((resolve, reject) => {
 		const nextFile = getNextFile()
 
 		copyFileStream(nextFile)
-		.then(toFileName => {
+		.then(toFile => {
 			done += 1
-			console.log(`Finished: ${done} of ${total}`)
+			console.log(`Finished: ${done} of ${total} > ${toFile}`)
 
 			if (done === total) {
 				console.log('ALL DONE!')
