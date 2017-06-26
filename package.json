@@ -1,0 +1,14 @@
+{
+  "name": "anrdoid-media-backup",
+  "version": "1.0.0",
+  "description": "Backup media files (photos and videos_ from your android phone.",
+  "main": "index.js",
+  "repository": "git@github.com:f1lt3r/anrdoid-media-backup.git",
+  "author": "f1lt3r",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "mkdirp": "^0.5.1",
+    "xo": "^0.18.2"
+  }
+}
