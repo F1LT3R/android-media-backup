@@ -2,13 +2,39 @@
   "name": "anrdoid-media-backup",
   "version": "1.0.0",
   "description": "Backup media files (photos and videos_ from your android phone.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": "git@github.com:f1lt3r/anrdoid-media-backup.git",
   "author": "f1lt3r",
   "license": "MIT",
   "dependencies": {
+    "@ronomon/utimes": "^2.0.0",
     "bluebird": "^3.5.0",
+    "chai": "^4.1.0",
+    "chai-as-promised": "^7.1.1",
     "mkdirp": "^0.5.1",
+    "mocha": "^3.4.2",
     "xo": "^0.18.2"
+  },
+  "xo": {
+    "esnext": true,
+    "semicolon": false,
+    "globals": [
+      "it",
+      "describe",
+      "beforeEach",
+      "before",
+      "after",
+      "afterEach",
+      "__dirname"
+    ],
+    "rules": {
+      "import/no-extraneous-dependencies": 0,
+      "import/no-dynamic-require": 0,
+      "import/no-unresolved": 0,
+      "new-cap": 0,
+      "no-use-extend-native": 0,
+      "no-multi-str": 0,
+      "space-before-function-paren": 0
+    }
   }
 }
